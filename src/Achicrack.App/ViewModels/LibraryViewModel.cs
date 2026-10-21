@@ -130,7 +130,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
         else
         {
-            await _host.Coordinator.StartTrackingAsync(item.Game);
+            await Task.Run(() => _host.Coordinator.StartTrackingAsync(item.Game)); // catalog parsing off the UI thread
         }
 
         UpdateStatuses();

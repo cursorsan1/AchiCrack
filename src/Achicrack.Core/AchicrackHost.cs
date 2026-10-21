@@ -166,16 +166,30 @@ public sealed class AchicrackHost : IAsyncDisposable
             await _cts.CancelAsync().ConfigureAwait(false);
         }
 
-        if (_detectionLoop is not null)
+        await Step("detection", async () =>
         {
-            await _detectionLoop.ConfigureAwait(false);
-        }
-
-        AutoTracking.Dispose();
-        await Coordinator.DisposeAsync().ConfigureAwait(false);
-        Router.Dispose();
-        await Queue.StopAsync().ConfigureAwait(false);
+            if (_detectionLoop is not null)
+            {
+                await _detectionLoop.ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+        await Step("auto-tracking", () => { AutoTracking.Dispose(); return Task.CompletedTask; }).ConfigureAwait(false);
+        await Step("coordinator", async () => await Coordinator.DisposeAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        await Step("router", () => { Router.Dispose(); return Task.CompletedTask; }).ConfigureAwait(false);
+        await Step("queue", () => Queue.StopAsync()).ConfigureAwait(false);
         _logger.LogInformation("Achicrack engine stopped");
+    }
+
+    private async Task Step(string name, Func<Task> action)
+    {
+        try
+        {
+            await action().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while stopping {Component}", name);
+        }
     }
 
     public async ValueTask DisposeAsync() => await StopAsync().ConfigureAwait(false);

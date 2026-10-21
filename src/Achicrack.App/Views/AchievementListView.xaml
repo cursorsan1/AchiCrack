@@ -74,14 +74,14 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <ColorAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                From="#663D8BFF" To="#171A20" Duration="0:0:2.5" />
-                                <DoubleAnimation Storyboard.TargetName="Img" Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:0.6" />
-                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleX" From="0.8" To="1" Duration="0:0:0.6">
+                                                From="#663D8BFF" To="#171A20" Duration="0:0:2.5" FillBehavior="Stop" />
+                                <DoubleAnimation Storyboard.TargetName="Img" Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:0.6" FillBehavior="Stop" />
+                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleX" From="0.8" To="1" Duration="0:0:0.6" FillBehavior="Stop">
                                     <DoubleAnimation.EasingFunction>
                                         <BackEase EasingMode="EaseOut" Amplitude="0.5" />
                                     </DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleY" From="0.8" To="1" Duration="0:0:0.6">
+                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleY" From="0.8" To="1" Duration="0:0:0.6" FillBehavior="Stop">
                                     <DoubleAnimation.EasingFunction>
                                         <BackEase EasingMode="EaseOut" Amplitude="0.5" />
                                     </DoubleAnimation.EasingFunction>

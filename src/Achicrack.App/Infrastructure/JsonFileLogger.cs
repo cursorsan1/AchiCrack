@@ -34,7 +34,22 @@ internal sealed class JsonFileLoggerProvider : ILoggerProvider
         _writer.Join(TimeSpan.FromSeconds(2));
     }
 
-    internal void Enqueue(string line) => _lines.TryAdd(line);
+    internal void Enqueue(string line)
+    {
+        if (_lines.IsAddingCompleted)
+        {
+            return;
+        }
+
+        try
+        {
+            _lines.TryAdd(line);
+        }
+        catch (InvalidOperationException)
+        {
+            // Completed concurrently during shutdown: drop the line rather than crash.
+        }
+    }
 
     private void WriteLoop()
     {

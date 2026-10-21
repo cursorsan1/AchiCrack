@@ -5,7 +5,7 @@ validation** (must be performed on Windows with real software). A successful bui
 achievement tracking works.
 
 ## What is verified automatically
-`dotnet test` runs ~100 xUnit tests against `Achicrack.Core` using the `Achicrack.FakeGame` fixture
+`dotnet test` runs 97 xUnit tests against `Achicrack.Core` using the `Achicrack.FakeGame` fixture
 (a fake Goldberg/GSE game folder + state files written the way the emulator writes them) and a simulated
 process table. Covered: state/manifest parsing, corrupted/truncated/locked files, locked→unlocked
 transitions, baseline import, duplicate suppression (incl. across restarts and concurrent engines),

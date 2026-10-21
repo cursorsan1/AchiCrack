@@ -129,8 +129,9 @@ public partial class OverlayWindow : Window
         var animation = EffectiveAnimation(style);
 
         var tcs = new TaskCompletionSource();
-        var opacity = Make(entering ? 0 : 1, entering ? 1 : 0, duration, ease);
-        opacity.Completed += (_, _) => tcs.TrySetResult();
+        var opacity = Make(entering ? 0 : 1, entering ? 1 : 0, duration, ease, freeze: false);
+        opacity.Completed += (_, _) => tcs.TrySetResult(); // must be hooked before the timeline is frozen
+        opacity.Freeze();
 
         switch (animation)
         {
@@ -161,14 +162,19 @@ public partial class OverlayWindow : Window
         }
 
         CardHost.BeginAnimation(OpacityProperty, opacity);
-        return tcs.Task;
+        // Never let a stopped clock stall the notification queue.
+        return Task.WhenAny(tcs.Task, Task.Delay(duration.TimeSpan + TimeSpan.FromSeconds(1)));
     }
 
-    private static DoubleAnimation Make(double from, double to, Duration duration, IEasingFunction ease)
+    private static DoubleAnimation Make(double from, double to, Duration duration, IEasingFunction ease, bool freeze = true)
     {
         var a = new DoubleAnimation(from, to, duration) { EasingFunction = ease, FillBehavior = FillBehavior.HoldEnd };
         Timeline.SetDesiredFrameRate(a, FrameRate);
-        a.Freeze();
+        if (freeze)
+        {
+            a.Freeze();
+        }
+
         return a;
     }
 }

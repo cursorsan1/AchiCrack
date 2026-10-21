@@ -86,7 +86,7 @@ public partial class App : Application
                 LoggerFactory = _loggerFactory,
                 Http = _http,
             });
-            _host.Start();
+            // Subscribe before starting so sessions of already-running games are not missed.
             _host.Coordinator.TrackingStarted += (_, s) => _ = EnrichRarityAsync(s);
             _host.Coordinator.SessionChanged += (_, s) =>
                 Dispatcher.InvokeAsync(() => _tray?.SetStatus($"Achicrack — {s.Game.Name}: {CurrentlyPlayingViewModel.Label(s.State)}"));
@@ -116,6 +116,20 @@ public partial class App : Application
             }
         };
         _viewModel.RefreshAll();
+        _host.Start();
+        SessionEnding += (_, _) =>
+        {
+            // Logoff/shutdown: stop monitors synchronously (final reconcile, last-played) with a bounded wait.
+            _exiting = true;
+            try
+            {
+                Task.Run(() => _host.StopAsync()).Wait(TimeSpan.FromSeconds(3));
+            }
+            catch (AggregateException ex)
+            {
+                _logger?.LogError(ex, "Stop during session end failed");
+            }
+        };
 
         _tray = new TrayIcon(
             ShowMainWindow,
