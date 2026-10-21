@@ -1,0 +1,87 @@
+<Window x:Class="Achicrack.App.Views.RegisterGameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:RegisterGameViewModel}"
+        Title="Add game" Width="820" Height="680" MinWidth="640" MinHeight="480"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}" FontFamily="Segoe UI" FontSize="13"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <DockPanel Margin="22">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Add game" Style="{StaticResource H1}" />
+            <TextBlock Text="Select the game folder or its executable. The folder is scanned read-only; nothing is modified."
+                       Style="{StaticResource Muted}" Margin="0,0,0,14" />
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Scan" Command="{Binding ScanCommand}" Style="{StaticResource PrimaryButton}" Margin="6,0,0,0" />
+                <Button DockPanel.Dock="Right" Content="Executable…" Click="BrowseExe_Click" Margin="6,0,0,0" />
+                <Button DockPanel.Dock="Right" Content="Folder…" Click="BrowseFolder_Click" Margin="6,0,0,0" />
+                <TextBox Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+            <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" Margin="0,8,0,0"
+                       Visibility="{Binding Error, Converter={StaticResource NullToVisibility}}" />
+            <TextBlock Text="Scanning…" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"
+                       Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+            <Button Content="Cancel" IsCancel="True" Margin="0,0,8,0" />
+            <Button Content="Register game" Command="{Binding RegisterCommand}" Style="{StaticResource PrimaryButton}" />
+        </StackPanel>
+
+        <ScrollViewer Margin="0,16,0,0" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding Report, Converter={StaticResource NullToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="180" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Name" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Steam App ID" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding AppIdText, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Detection methods" Style="{StaticResource H2}" />
+                <ItemsControl ItemsSource="{Binding Methods}" Margin="0,0,0,12">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:MethodRow}">
+                            <Border Style="{StaticResource Card}" Padding="12,8" Margin="0,0,0,6">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Style="{StaticResource Chip}" Background="{Binding Brush}" Margin="0,0,8,0">
+                                            <TextBlock Text="{Binding Status}" Foreground="#0F1115" FontWeight="SemiBold" FontSize="11" />
+                                        </Border>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Details}" Style="{StaticResource Muted}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="Executables that identify the game" Style="{StaticResource H2}" />
+                <TextBlock Text="Selected executables are matched by full path. Any other non-launcher executable inside the game folder also counts."
+                           Style="{StaticResource Muted}" Margin="0,0,0,6" />
+                <ItemsControl ItemsSource="{Binding Executables}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:ExecutableOption}">
+                            <CheckBox IsChecked="{Binding IsSelected}">
+                                <TextBlock Text="{Binding Path}" FontFamily="Consolas" FontSize="11" />
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Only used for the system tray NotifyIcon (WPF has no tray API). -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Achicrack.App</RootNamespace>
+    <AssemblyName>Achicrack</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\achicrack.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- WFO0003: DPI awareness is declared in app.manifest, which is the correct place for a WPF app. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MVVM source generators (ObservableProperty / RelayCommand). -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <!-- LoggerFactory host for the app's structured file logger. -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- WinForms is referenced only for NotifyIcon; keep its namespaces out of global usings to avoid WPF type clashes. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Achicrack.Core\Achicrack.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\*.png" />
+    <Resource Include="Assets\achicrack.ico" />
+    <None Update="Assets\Sounds\*.wav" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

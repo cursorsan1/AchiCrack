@@ -1,0 +1,29 @@
+<UserControl x:Class="Achicrack.App.Views.AchievementsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+             xmlns:views="clr-namespace:Achicrack.App.Views"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:AchievementsViewModel}">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,14">
+            <StackPanel>
+                <TextBlock Text="Achievements" Style="{StaticResource H1}" />
+                <TextBlock Style="{StaticResource Muted}">
+                    <Run Text="{Binding List.ProgressText, Mode=OneWay}" Foreground="{StaticResource GoldBrush}" FontWeight="SemiBold" />
+                    <Run Text=" unlocked · " /><Run Text="{Binding List.CompletionText, Mode=OneWay}" /><Run Text=" complete · source: " />
+                    <Run Text="{Binding List.CatalogSource, Mode=OneWay}" />
+                </TextBlock>
+            </StackPanel>
+            <ComboBox HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="260" ItemsSource="{Binding Games}"
+                      SelectedItem="{Binding SelectedGame}" DisplayMemberPath="Name" />
+        </Grid>
+        <Border DockPanel.Dock="Top" Background="#22F5B841" BorderBrush="#66F5B841" BorderThickness="1" CornerRadius="8" Padding="12,8"
+                Margin="0,0,0,12" Visibility="{Binding List.CatalogNote, Converter={StaticResource NullToVisibility}}">
+            <TextBlock Text="{Binding List.CatalogNote}" TextWrapping="Wrap" Foreground="{StaticResource WarningBrush}" />
+        </Border>
+        <views:AchievementListView DataContext="{Binding List}" />
+    </DockPanel>
+</UserControl>

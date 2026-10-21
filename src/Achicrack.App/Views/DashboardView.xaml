@@ -1,0 +1,88 @@
+<UserControl x:Class="Achicrack.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,18">
+            <TextBlock Text="Dashboard" Style="{StaticResource H1}" />
+            <TextBlock Text="Your achievement history across all registered games." Style="{StaticResource Muted}" />
+        </StackPanel>
+
+        <UniformGrid DockPanel.Dock="Top" Columns="4" Margin="0,0,0,18">
+            <Border Style="{StaticResource Card}" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding GameCount}" Style="{StaticResource StatValue}" />
+                    <TextBlock Text="Registered games" Style="{StaticResource StatLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="5,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding TotalUnlocked}" Style="{StaticResource StatValue}" Foreground="{StaticResource GoldBrush}" />
+                    <TextBlock Text="Achievements unlocked" Style="{StaticResource StatLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="5,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding TotalKnown}" Style="{StaticResource StatValue}" />
+                    <TextBlock Text="Achievements in complete catalogs" Style="{StaticResource StatLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="10,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding Completion}" Style="{StaticResource StatValue}" Foreground="{StaticResource AccentBrush}" />
+                    <TextBlock Text="Completion (complete catalogs)" Style="{StaticResource StatLabel}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border Style="{StaticResource Card}">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Recently unlocked" Style="{StaticResource H2}" />
+                <Grid>
+                    <ListBox x:Name="Recent" ItemsSource="{Binding RecentUnlocks}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Focusable" Value="False" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:RecentUnlockItem}">
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="{Binding Icon, TargetNullValue={StaticResource DefaultTrophyImage}}" Width="44" Height="44">
+                                        <Image.Clip>
+                                            <RectangleGeometry Rect="0,0,44,44" RadiusX="7" RadiusY="7" />
+                                        </Image.Clip>
+                                    </Image>
+                                    <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding GameName}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{Binding When}" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Text="No achievements recorded yet. Register a game in the Game Library, or try the demo in Notification Studio."
+                               Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" MaxWidth="420"
+                               Visibility="{Binding HasItems, ElementName=Recent, Converter={StaticResource BoolToVisibility}, ConverterParameter=invert}" />
+                </Grid>
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

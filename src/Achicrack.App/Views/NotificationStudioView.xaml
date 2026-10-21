@@ -1,0 +1,144 @@
+<UserControl x:Class="Achicrack.App.Views.NotificationStudioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+             xmlns:overlay="clr-namespace:Achicrack.App.Overlay"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:NotificationStudioViewModel}">
+    <UserControl.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="Margin" Value="0,10,0,4" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </UserControl.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Notification Studio" Style="{StaticResource H1}" />
+                <TextBlock Text="Design the PS5-inspired popup. The preview updates live; Save makes it active." Style="{StaticResource Muted}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="Reset" Command="{Binding ResetCommand}" Margin="0,0,8,0" />
+                <Button Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Foreground="{StaticResource AccentBrush}" Margin="0,10,0,0" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="340" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Controls -->
+            <Border Style="{StaticResource Card}" Margin="0,0,14,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="Layout" Style="{StaticResource H2}" />
+                        <TextBlock Text="Position" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding Positions}" SelectedItem="{Binding Position}" />
+                        <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Duration: " /><Run Text="{Binding DurationSeconds, StringFormat={}{0:0.0} s, Mode=OneWay}" /></TextBlock>
+                        <Slider Minimum="1.5" Maximum="15" Value="{Binding DurationSeconds}" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+                        <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Scale: " /><Run Text="{Binding Scale, StringFormat={}{0:0.00}×, Mode=OneWay}" /></TextBlock>
+                        <Slider Minimum="0.6" Maximum="2" Value="{Binding Scale}" TickFrequency="0.05" IsSnapToTickEnabled="True" />
+                        <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Screen margin: " /><Run Text="{Binding MarginX, StringFormat={}{0:0}, Mode=OneWay}" /><Run Text=" × " /><Run Text="{Binding MarginY, StringFormat={}{0:0}, Mode=OneWay}" /></TextBlock>
+                        <Slider Minimum="0" Maximum="200" Value="{Binding MarginX}" TickFrequency="2" IsSnapToTickEnabled="True" />
+                        <Slider Minimum="0" Maximum="200" Value="{Binding MarginY}" TickFrequency="2" IsSnapToTickEnabled="True" Margin="0,6,0,0" />
+                        <TextBlock Text="Animation" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding Animations}" SelectedItem="{Binding Animation}" />
+
+                        <TextBlock Text="Appearance" Style="{StaticResource H2}" Margin="0,22,0,0" />
+                        <TextBlock Style="{StaticResource FieldLabel}" Margin="0,0,0,4"><Run Text="Background opacity: " /><Run Text="{Binding BackgroundOpacity, StringFormat={}{0:P0}, Mode=OneWay}" /></TextBlock>
+                        <Slider Minimum="0.3" Maximum="1" Value="{Binding BackgroundOpacity}" TickFrequency="0.01" IsSnapToTickEnabled="True" />
+                        <TextBlock Text="Font" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding Fonts}" SelectedItem="{Binding FontFamily}" IsTextSearchEnabled="True" />
+                        <TextBlock Text="Background color (hex)" Style="{StaticResource FieldLabel}" />
+                        <DockPanel>
+                            <Border DockPanel.Dock="Right" Width="28" Height="28" CornerRadius="6" Margin="8,0,0,0" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" Background="{Binding BackgroundColor}" />
+                            <TextBox Text="{Binding BackgroundColor, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+                        <TextBlock Text="Accent color (hex)" Style="{StaticResource FieldLabel}" />
+                        <DockPanel>
+                            <Border DockPanel.Dock="Right" Width="28" Height="28" CornerRadius="6" Margin="8,0,0,0" BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" Background="{Binding AccentColor}" />
+                            <TextBox Text="{Binding AccentColor, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+                        <CheckBox Content="Show rarity line" IsChecked="{Binding ShowRarity}" Margin="0,12,0,0" />
+
+                        <TextBlock Text="Sound" Style="{StaticResource H2}" Margin="0,22,0,0" />
+                        <CheckBox Content="Play sound" IsChecked="{Binding SoundEnabled}" />
+                        <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Volume: " /><Run Text="{Binding SoundVolume, StringFormat={}{0:P0}, Mode=OneWay}" /></TextBlock>
+                        <Slider Minimum="0" Maximum="1" Value="{Binding SoundVolume}" TickFrequency="0.05" IsSnapToTickEnabled="True" />
+                        <TextBlock Text="Custom sound file (empty = built-in chime)" Style="{StaticResource FieldLabel}" />
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="Clear" Command="{Binding ClearSoundCommand}" Margin="6,0,0,0" />
+                            <Button DockPanel.Dock="Right" Content="Browse…" Command="{Binding BrowseSoundCommand}" Margin="6,0,0,0" />
+                            <TextBox Text="{Binding SoundPath}" IsReadOnly="True" />
+                        </DockPanel>
+
+                        <TextBlock Text="Presets" Style="{StaticResource H2}" Margin="0,22,0,0" />
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="Delete" Command="{Binding DeletePresetCommand}" Margin="6,0,0,0" />
+                            <Button DockPanel.Dock="Right" Content="Load" Command="{Binding ApplyPresetCommand}" Margin="6,0,0,0" />
+                            <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset}" MinWidth="0" />
+                        </DockPanel>
+                        <DockPanel Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Content="Save as preset" Command="{Binding SavePresetCommand}" Margin="6,0,0,0" />
+                            <TextBox Text="{Binding NewPresetName, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Preview -->
+            <DockPanel Grid.Column="1">
+                <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Margin="0,0,0,14">
+                    <WrapPanel>
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="Preview type" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <ComboBox ItemsSource="{Binding PreviewKinds}" SelectedItem="{Binding PreviewKind}" MinWidth="140" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="Rarity" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <ComboBox ItemsSource="{Binding RarityTiers}" SelectedItem="{Binding PreviewRarity}" MinWidth="140" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="Title" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding PreviewTitle, UpdateSourceTrigger=PropertyChanged}" Width="180" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="Description" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding PreviewMessage, UpdateSourceTrigger=PropertyChanged}" Width="220" />
+                        </StackPanel>
+                    </WrapPanel>
+                </Border>
+
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                    <Button Content="Simulate achievement unlock" Command="{Binding SimulateUnlockCommand}" Margin="0,0,8,0"
+                            ToolTip="Unlocks the next demo achievement through the full pipeline (engine, database, overlay)." />
+                    <Button Content="Show test notification" Command="{Binding TestNotificationCommand}" Style="{StaticResource PrimaryButton}" />
+                </StackPanel>
+
+                <!-- Fake "game screen" backdrop -->
+                <Border CornerRadius="12" ClipToBounds="True" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#2B3A55" Offset="0" />
+                            <GradientStop Color="#4A2F45" Offset="0.55" />
+                            <GradientStop Color="#1C2333" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <TextBlock Text="GAME" FontSize="96" FontWeight="Black" Foreground="#14FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <overlay:NotificationCard DataContext="{Binding Preview}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

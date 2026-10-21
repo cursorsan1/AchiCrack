@@ -1,0 +1,134 @@
+<UserControl x:Class="Achicrack.App.Views.AchievementListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:GameAchievementsViewModel}">
+    <UserControl.Resources>
+        <DataTemplate x:Key="AchievementTemplate" DataType="{x:Type vm:AchievementItemViewModel}">
+            <Border x:Name="Root" CornerRadius="10" Padding="10" Margin="0,0,6,8" BorderThickness="1" BorderBrush="{StaticResource BorderBrush}">
+                <Border.Background>
+                    <SolidColorBrush Color="#171A20" />
+                </Border.Background>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Width="56" Height="56" VerticalAlignment="Center">
+                        <Image x:Name="Img" Source="{Binding Icon, TargetNullValue={StaticResource DefaultTrophyImage}}" Stretch="UniformToFill"
+                               RenderOptions.BitmapScalingMode="HighQuality" RenderTransformOrigin="0.5,0.5">
+                            <Image.Clip>
+                                <RectangleGeometry Rect="0,0,56,56" RadiusX="8" RadiusY="8" />
+                            </Image.Clip>
+                            <Image.RenderTransform>
+                                <ScaleTransform x:Name="ImgScale" ScaleX="1" ScaleY="1" />
+                            </Image.RenderTransform>
+                        </Image>
+                        <Border x:Name="LockBadge" Background="#E60F1115" CornerRadius="8" Width="22" Height="22"
+                                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-4,-4" Visibility="Collapsed">
+                            <Path Data="{StaticResource LockGeometry}" Fill="{StaticResource MutedBrush}" Width="11" Height="11" Stretch="Uniform" />
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Grid.Column="1" Margin="14,0,10,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="TitleText" Text="{Binding Title}" FontWeight="SemiBold" FontSize="15"
+                                   Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="DescText" Text="{Binding Description}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"
+                                   Margin="0,2,0,0" Visibility="{Binding Description, Converter={StaticResource NullToVisibility}}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="{Binding ApiName}" FontFamily="Consolas" FontSize="11" Foreground="#6B7280" />
+                            <TextBlock Text="{Binding RarityText}" Foreground="{Binding RarityBrush}" FontSize="11" Margin="12,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" MinWidth="120">
+                        <Path x:Name="Trophy" Data="{StaticResource TrophyGeometry}" Fill="{StaticResource GoldBrush}" Width="20" Height="20"
+                              Stretch="Uniform" HorizontalAlignment="Right" />
+                        <TextBlock x:Name="StateText" Text="{Binding StateText}" Foreground="{StaticResource MutedBrush}" FontSize="11"
+                                   HorizontalAlignment="Right" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding UnlockedText}" Foreground="{StaticResource MutedBrush}" FontSize="11" HorizontalAlignment="Right"
+                                   Visibility="{Binding UnlockedText, Converter={StaticResource NullToVisibility}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsUnlocked}" Value="False">
+                    <Setter TargetName="Img" Property="Opacity" Value="0.45" />
+                    <Setter TargetName="TitleText" Property="Foreground" Value="{StaticResource MutedBrush}" />
+                    <Setter TargetName="DescText" Property="Opacity" Value="0.75" />
+                    <Setter TargetName="Trophy" Property="Fill" Value="#3A3F49" />
+                    <Setter TargetName="LockBadge" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsUnlocked}" Value="True">
+                    <Setter TargetName="Root" Property="BorderBrush" Value="#55E8C25A" />
+                    <Setter TargetName="StateText" Property="Foreground" Value="{StaticResource GoldBrush}" />
+                </DataTrigger>
+                <!-- One-time highlight for unlocks that happen during this session only. -->
+                <DataTrigger Binding="{Binding IsNewlyUnlocked}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                From="#663D8BFF" To="#171A20" Duration="0:0:2.5" />
+                                <DoubleAnimation Storyboard.TargetName="Img" Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:0.6" />
+                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleX" From="0.8" To="1" Duration="0:0:0.6">
+                                    <DoubleAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.5" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="ImgScale" Storyboard.TargetProperty="ScaleY" From="0.8" To="1" Duration="0:0:0.6">
+                                    <DoubleAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.5" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <Style x:Key="PlainItem" TargetType="ListBoxItem">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="All" Style="{StaticResource PillToggle}" IsChecked="{Binding IsAll}" />
+                <RadioButton Content="Locked" Style="{StaticResource PillToggle}" IsChecked="{Binding IsLocked}" />
+                <RadioButton Content="Unlocked" Style="{StaticResource PillToggle}" IsChecked="{Binding IsUnlocked}" />
+            </StackPanel>
+            <Grid Grid.Column="1" Margin="12,0,0,0" MaxWidth="320" HorizontalAlignment="Right">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" />
+                <TextBlock Text="Search achievements…" Foreground="{StaticResource MutedBrush}" Margin="9,0,0,0" VerticalAlignment="Center"
+                           IsHitTestVisible="False"
+                           Visibility="{Binding SearchText, Converter={StaticResource NullToVisibility}, ConverterParameter=invert}" />
+            </Grid>
+        </Grid>
+        <Grid>
+            <ListBox x:Name="List" ItemsSource="{Binding View}" ItemTemplate="{StaticResource AchievementTemplate}" ItemContainerStyle="{StaticResource PlainItem}"
+                     VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling" />
+            <TextBlock Text="No achievements to show." Style="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Visibility="{Binding HasItems, ElementName=List, Converter={StaticResource BoolToVisibility}, ConverterParameter=invert}" />
+        </Grid>
+    </DockPanel>
+</UserControl>

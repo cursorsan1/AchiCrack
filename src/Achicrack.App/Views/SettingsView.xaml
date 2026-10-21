@@ -1,0 +1,90 @@
+<UserControl x:Class="Achicrack.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Achicrack.App.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}">
+    <UserControl.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="Margin" Value="0,10,0,4" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </UserControl.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Settings" Style="{StaticResource H1}" />
+                <TextBlock Text="{Binding Status}" Foreground="{StaticResource AccentBrush}" />
+            </StackPanel>
+            <Button Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <UniformGrid Columns="2">
+                <StackPanel Margin="0,0,10,0">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="Startup" Style="{StaticResource H2}" />
+                            <CheckBox Content="Start Achicrack with Windows" IsChecked="{Binding StartWithWindows}" />
+                            <CheckBox Content="Start minimized to the system tray" IsChecked="{Binding StartMinimizedToTray}" />
+                            <CheckBox Content="Closing the window keeps Achicrack running in the tray" IsChecked="{Binding CloseToTray}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="Notifications" Style="{StaticResource H2}" />
+                            <CheckBox Content="Show achievement unlock notifications" IsChecked="{Binding ShowAchievementNotification}" />
+                            <CheckBox Content="Show “Started Tracking” notifications" IsChecked="{Binding ShowTrackingStartedNotification}" />
+                            <TextBlock Text="Appearance, sound and position are configured in Notification Studio." Style="{StaticResource Muted}" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Metadata" Style="{StaticResource H2}" />
+                            <TextBlock Text="Manifest language (Steam schema name, e.g. english, german, hungarian)" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding Language}" />
+                            <CheckBox Content="Fetch global rarity from the public Steam Web API (optional, online)" IsChecked="{Binding OnlineMetadataEnabled}" Margin="0,10,0,0" />
+                            <TextBlock Text="Everything else works offline. No Steam account or login is used." Style="{StaticResource Muted}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <StackPanel Margin="10,0,0,0">
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="Monitoring" Style="{StaticResource H2}" />
+                            <CheckBox Content="Automatically detect running registered games" IsChecked="{Binding AutoDetectGames}" />
+                            <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Process check interval: " /><Run Text="{Binding ProcessPollSeconds, StringFormat={}{0:0.0} s, Mode=OneWay}" /></TextBlock>
+                            <Slider Minimum="0.5" Maximum="10" Value="{Binding ProcessPollSeconds}" TickFrequency="0.5" IsSnapToTickEnabled="True" />
+                            <TextBlock Style="{StaticResource FieldLabel}"><Run Text="State file reconciliation: " /><Run Text="{Binding ReconcileSeconds, StringFormat={}{0:0} s, Mode=OneWay}" /></TextBlock>
+                            <Slider Minimum="2" Maximum="120" Value="{Binding ReconcileSeconds}" TickFrequency="1" IsSnapToTickEnabled="True" />
+                            <TextBlock Style="{StaticResource FieldLabel}"><Run Text="Game exit grace period: " /><Run Text="{Binding ExitGraceSeconds, StringFormat={}{0:0} s, Mode=OneWay}" /></TextBlock>
+                            <Slider Minimum="0" Maximum="60" Value="{Binding ExitGraceSeconds}" TickFrequency="1" IsSnapToTickEnabled="True" />
+                            <TextBlock Text="File changes are detected instantly via filesystem notifications; reconciliation is only a cheap fallback check."
+                                       Style="{StaticResource Muted}" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Data and diagnostics" Style="{StaticResource H2}" />
+                            <TextBlock Text="Active database" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBlock Text="{Binding ActiveDatabasePath}" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Custom database location (applies after restart; empty = default)" Style="{StaticResource FieldLabel}" />
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="Browse…" Command="{Binding BrowseDatabaseCommand}" Margin="6,0,0,0" />
+                                <TextBox Text="{Binding DatabasePathOverride}" />
+                            </DockPanel>
+                            <TextBlock Text="Log level" Style="{StaticResource FieldLabel}" />
+                            <ComboBox ItemsSource="{Binding LogLevels}" SelectedItem="{Binding LogLevel}" HorizontalAlignment="Left" />
+                            <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" Margin="0,0,8,0" />
+                                <Button Content="Open logs" Command="{Binding OpenLogsFolderCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </UniformGrid>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
