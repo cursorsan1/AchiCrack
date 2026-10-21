@@ -23,7 +23,13 @@ public sealed partial class CurrentlyPlayingViewModel : ObservableObject
         host.Coordinator.SessionChanged += (_, s) => Ui(() => OnSessionChanged(s));
         host.Detection.PrimaryGameChanged += (_, _) => Ui(Refresh);
         host.Engine.AchievementUnlocked += (_, e) => Ui(() => Achievements.ApplyUnlock(e.Unlock));
+        host.Detection.AmbiguousProcess += (_, u) => Ui(() => UnknownGameNotice =
+            $"Unknown game: '{Path.GetFileName(u.ExecutablePath)}' could not be identified confidently ({u.Reason}) and is not tracked.");
+        host.Detection.GameStarted += (_, _) => Ui(() => UnknownGameNotice = null);
     }
+
+    /// <summary>Shown when a running process could belong to several registered games (never guessed).</summary>
+    [ObservableProperty] private string? _unknownGameNotice;
 
     public GameAchievementsViewModel Achievements { get; }
 

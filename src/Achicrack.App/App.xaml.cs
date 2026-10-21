@@ -108,6 +108,8 @@ public partial class App : Application
         _window = new MainWindow(_viewModel, () => !_exiting && settings.Current.CloseToTray);
         _window.Closed += (_, _) =>
         {
+            // Window really closed (close-to-tray disabled): it cannot be shown again, so exit.
+            _window = null;
             if (!_exiting)
             {
                 ExitApplication();
@@ -117,13 +119,7 @@ public partial class App : Application
 
         _tray = new TrayIcon(
             ShowMainWindow,
-            () => _host.Queue.Enqueue(new NotificationRequest
-            {
-                Kind = NotificationKind.Test,
-                Header = "Achievement Unlocked",
-                Title = "The Beginning",
-                Message = "Complete the first mission.",
-            }),
+            () => _host.Queue.Enqueue(TestRequest()),
             () => _ = _host.SimulateDemoUnlockAsync(),
             ExitApplication);
 
@@ -135,7 +131,26 @@ public partial class App : Application
         {
             ShowMainWindow();
         }
+
+        // Smoke-test switches: exercise the overlay without clicking through the UI.
+        if (e.Args.Contains("--test-notification", StringComparer.OrdinalIgnoreCase))
+        {
+            _host.Queue.Enqueue(TestRequest());
+        }
+
+        if (e.Args.Contains("--simulate-unlock", StringComparer.OrdinalIgnoreCase))
+        {
+            _ = _host.SimulateDemoUnlockAsync();
+        }
     }
+
+    private static NotificationRequest TestRequest() => new()
+    {
+        Kind = NotificationKind.Test,
+        Header = "Achievement Unlocked",
+        Title = "The Beginning",
+        Message = "Complete the first mission.",
+    };
 
     protected override void OnExit(ExitEventArgs e)
     {

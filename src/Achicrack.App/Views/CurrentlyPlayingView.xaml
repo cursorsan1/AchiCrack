@@ -75,6 +75,12 @@
             </Grid>
         </Border>
 
+        <!-- Unknown / ambiguous game -->
+        <Border DockPanel.Dock="Top" Background="#22FF5C6C" BorderBrush="#66FF5C6C" BorderThickness="1" CornerRadius="8" Padding="12,8"
+                Margin="0,0,0,12" Visibility="{Binding UnknownGameNotice, Converter={StaticResource NullToVisibility}}">
+            <TextBlock Text="{Binding UnknownGameNotice}" TextWrapping="Wrap" Foreground="{StaticResource DangerBrush}" />
+        </Border>
+
         <!-- Incomplete catalog warning -->
         <Border DockPanel.Dock="Top" Background="#22F5B841" BorderBrush="#66F5B841" BorderThickness="1" CornerRadius="8" Padding="12,8"
                 Margin="0,0,0,12" Visibility="{Binding Achievements.CatalogNote, Converter={StaticResource NullToVisibility}}">
