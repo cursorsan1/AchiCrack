@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <!-- Custom entry point (Program.Main) so startup failures are reported instead of dying silently. -->
+    <StartupObject>Achicrack.App.Program</StartupObject>
     <!-- Only used for the system tray NotifyIcon (WPF has no tray API). -->
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Achicrack.App</RootNamespace>
@@ -27,6 +29,13 @@
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
     <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- App.xaml must be a Page (not ApplicationDefinition) so WPF does not generate its own Main,
+         which would conflict with Program.Main. InitializeComponent is still generated. -->
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
   </ItemGroup>
 
   <ItemGroup>
