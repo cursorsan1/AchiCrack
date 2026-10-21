@@ -118,11 +118,16 @@
                     </WrapPanel>
                 </Border>
 
-                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
                     <Button Content="Simulate achievement unlock" Command="{Binding SimulateUnlockCommand}" Margin="0,0,8,0"
                             ToolTip="Unlocks the next demo achievement through the full pipeline (engine, database, overlay)." />
-                    <Button Content="Show test notification" Command="{Binding TestNotificationCommand}" Style="{StaticResource PrimaryButton}" />
-                </StackPanel>
+                    <Button Content="Test Tracking Notification" Command="{Binding TestTrackingNotificationCommand}" Margin="0,0,8,0"
+                            ToolTip="Shows a real 'Started Tracking' overlay window." />
+                    <Button Content="Test Multiple Achievements" Command="{Binding TestMultipleAchievementsCommand}" Margin="0,0,8,0"
+                            ToolTip="Queues three real achievement overlays back-to-back to demonstrate queuing." />
+                    <Button Content="Test Achievement Notification" Command="{Binding TestAchievementNotificationCommand}" Style="{StaticResource PrimaryButton}"
+                            ToolTip="Shows a real 'Achievement Unlocked' overlay window using the preview content." />
+                </WrapPanel>
 
                 <!-- Fake "game screen" backdrop -->
                 <Border CornerRadius="12" ClipToBounds="True" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">

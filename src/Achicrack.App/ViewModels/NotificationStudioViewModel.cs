@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using Achicrack.App.Overlay;
 using Achicrack.Core;
+using Achicrack.Core.Adapters.Simulated;
 using Achicrack.Core.Library;
 using Achicrack.Core.Notifications;
 using Achicrack.Core.Settings;
@@ -109,6 +110,65 @@ public sealed partial class NotificationStudioViewModel : ObservableObject
         Status = "Test notification queued (current style saved).";
     }
 
+    /// <summary>Queues a real "Started Tracking" overlay window (no simulated game session required).</summary>
+    [RelayCommand]
+    private void TestTrackingNotification()
+    {
+        PersistPreviewStyle();
+        _host.Queue.Enqueue(new NotificationRequest
+        {
+            Kind = NotificationKind.TrackingStarted,
+            Header = "Started Tracking",
+            Title = string.IsNullOrWhiteSpace(PreviewTitle) ? SimulatedGameAdapter.DemoGameName : PreviewTitle,
+            Message = "Achievement tracking is now active.",
+            DedupKey = null,
+        });
+        Status = "Tracking notification queued (real overlay window).";
+    }
+
+    /// <summary>Queues a real "Achievement Unlocked" overlay window using the current preview content.</summary>
+    [RelayCommand]
+    private void TestAchievementNotification()
+    {
+        PersistPreviewStyle();
+        _host.Queue.Enqueue(new NotificationRequest
+        {
+            Kind = NotificationKind.Test,
+            Header = "Achievement Unlocked",
+            Title = string.IsNullOrWhiteSpace(PreviewTitle) ? "The Beginning" : PreviewTitle,
+            Message = string.IsNullOrWhiteSpace(PreviewMessage) ? "Complete the first mission." : PreviewMessage,
+            Rarity = PreviewRarity,
+            GlobalPercent = PercentFor(PreviewRarity),
+            DedupKey = null,
+        });
+        Status = "Achievement notification queued (real overlay window).";
+    }
+
+    /// <summary>Queues several real achievement overlays back-to-back to demonstrate the notification queue.</summary>
+    [RelayCommand]
+    private void TestMultipleAchievements()
+    {
+        PersistPreviewStyle();
+        var samples = SimulatedGameAdapter.Definitions.Take(3).ToList();
+        var tiers = new[] { RarityTier.Common, RarityTier.Rare, RarityTier.UltraRare };
+        for (var i = 0; i < samples.Count; i++)
+        {
+            var def = samples[i];
+            _host.Queue.Enqueue(new NotificationRequest
+            {
+                Kind = NotificationKind.Test,
+                Header = "Achievement Unlocked",
+                Title = def.DisplayName ?? def.ApiName,
+                Message = def.Description,
+                Rarity = tiers[i % tiers.Length],
+                GlobalPercent = def.GlobalPercent,
+                DedupKey = null,
+            });
+        }
+
+        Status = $"Queued {samples.Count} achievement notifications (they appear one after another).";
+    }
+
     [RelayCommand]
     private async Task SimulateUnlock()
     {
@@ -118,6 +178,22 @@ public sealed partial class NotificationStudioViewModel : ObservableObject
             ? "All demo achievements are already unlocked."
             : $"Simulated unlock of {api} on the demo game (full pipeline: engine → database → overlay).";
     }
+
+    /// <summary>Saves the current (preview) style so the queued test overlays use the designed appearance.</summary>
+    private void PersistPreviewStyle()
+    {
+        _host.Settings.Save(_host.Settings.Current with { Notification = BuildStyle() });
+        IsDirty = false;
+    }
+
+    private static double? PercentFor(RarityTier tier) => tier switch
+    {
+        RarityTier.Common => 64.2,
+        RarityTier.Rare => 31.5,
+        RarityTier.VeryRare => 12.8,
+        RarityTier.UltraRare => 2.1,
+        _ => null,
+    };
 
     [RelayCommand]
     private void BrowseSound()
@@ -197,14 +273,7 @@ public sealed partial class NotificationStudioViewModel : ObservableObject
 
     private NotificationRequest BuildPreviewRequest()
     {
-        var percent = PreviewRarity switch
-        {
-            RarityTier.Common => 64.2,
-            RarityTier.Rare => 31.5,
-            RarityTier.VeryRare => 12.8,
-            RarityTier.UltraRare => 2.1,
-            _ => (double?)null,
-        };
+        var percent = PercentFor(PreviewRarity);
         return PreviewKind == PreviewKind.Tracking
             ? new NotificationRequest
             {
