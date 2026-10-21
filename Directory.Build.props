@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <!-- Allows building the WPF project on non-Windows CI/dev machines (build only, not run). -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Company>Achicrack</Company>
+    <Product>Achicrack</Product>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+</Project>

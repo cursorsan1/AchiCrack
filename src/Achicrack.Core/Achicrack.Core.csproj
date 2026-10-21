@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Achicrack.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- SQLite persistence (ADO.NET provider, bundles native e_sqlite3). -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.11" />
+    <!-- ILogger abstraction only; the concrete file logger lives in the app. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Achicrack.Core.Tests" />
+  </ItemGroup>
+
+</Project>

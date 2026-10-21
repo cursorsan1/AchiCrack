@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Achicrack.App/Achicrack.App.csproj" />
+    <Project Path="src/Achicrack.Core/Achicrack.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Achicrack.Core.Tests/Achicrack.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Achicrack.FakeGame/Achicrack.FakeGame.csproj" />
+  </Folder>
+</Solution>
